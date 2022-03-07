@@ -10,6 +10,7 @@ Transactions routine REST API
 * Lombok - Lombok is used to reduce boilerplate code for model/data objects,
 * Maven 3.x - Dependency Management
 * Spring doc openapi - API Documentation (spring-boot and swagger-ui)
+* Docker - containerize the application
 
 ## Steps to run the application
 
@@ -45,18 +46,18 @@ The app defines following APIs.
 ### Account
 
 | Method | Url            | Decription                | Sample Valid Request Body | 
-|--------|----------------|---------------------------|---------------------------|
-| POST   | /accounts      | Create account            | [JSON](#accountcreate)    |
-| GET    | /accounts/{id} | Get accound by account id | /accounts/1               |
+|--------|----------------|---------------------------|---------------|
+| POST   | /accounts      | Create account            | [JSON](#accountcreate) |
+| GET    | /accounts/{id} | Get account by account id ||
 
 ### Transaction
 
-| Method | Url                               | Description                                                                           | Sample Valid Request Body  |
-|--------|-----------------------------------|---------------------------------------------------------------------------------------|----------------------------|
-| POST   | /transactions                     | Create a transaction                                                                  | [JSON](#transactioncreate) |
+| Method | Url                               | Description              | Sample Valid Request Body  |
+|--------|-----------------------------------|--------------------------|----------------------------|
+| POST   | /transactions                     | Create a transaction     | [JSON](#transactioncreate) |
 
 
-Test them using postman or any other rest client.
+Test it using postman or any other rest client.
 
 ## Sample Valid JSON Request
 
@@ -73,5 +74,13 @@ Test them using postman or any other rest client.
   "accountId" : 1,
   "operationTypeId" : 1,
   "amount" : -23.00
+}
+```
+## Sample JSON response
+##### <a id="accountget">Retrieves an account by id -> /accounts/1</a>
+```json
+{
+  "id": 1,
+  "documentNumber": "1321212332"
 }
 ```
