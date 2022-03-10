@@ -58,7 +58,7 @@ public class TransactionServiceTest {
                 .build();
         //when
         when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transaction);
-        Long createdTransactionId = transactionService.create(transactionRequest);
+        Long createdTransactionId = transactionService.create(transactionRequest).getId();
 
         //then
         assertNotNull(createdTransactionId);
@@ -151,7 +151,7 @@ public class TransactionServiceTest {
 
         when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transaction);
 
-        Long newId = transactionService.create(transactionRequest);
+        Long newId = transactionService.create(transactionRequest).getId();
         assertNotNull(newId);
         assertEquals(transaction.getId(), newId);
     }

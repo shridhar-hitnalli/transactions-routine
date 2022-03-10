@@ -19,7 +19,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Data
-@EqualsAndHashCode(of = { "id"})
 public class Transaction implements Serializable {
 
     private static final long serialVersionUID = 290968723743544700L;

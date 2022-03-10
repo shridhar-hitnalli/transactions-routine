@@ -34,7 +34,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @Transactional
-    public Long create(TransactionRequest transactionRequest) {
+    public Transaction create(TransactionRequest transactionRequest) {
         log.info("creating transaction {}", transactionRequest);
         final Account account = accountService.findById(transactionRequest.getAccountId());
         final OperationType operationType = operationTypeService.findById(transactionRequest.getOperationTypeId());
@@ -70,14 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
                         .balance(balance)
                         .eventDate(new Date())
                         .build()
-        ).getId();
-    }
-
-    @Override
-    public Transaction findById(Long id) {
-        log.info("FindById :{}", id);
-        return transactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("Account not found with id : %s", id)));
+        );
     }
 
     private List<Transaction> getTransactionsByAccountId(Long id) {

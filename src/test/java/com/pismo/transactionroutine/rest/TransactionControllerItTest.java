@@ -47,11 +47,12 @@ public class TransactionControllerItTest {
 
         //when
         HttpEntity<TransactionRequest> transactionRequest = new HttpEntity<>(TransactionRequest.builder().accountId(1L).operationTypeId(1L).amount(-10.00).build());
-        ResponseEntity<Void> responseEntityTransaction = restTemplate.postForEntity("/transactions", transactionRequest, Void.class);
+        ResponseEntity<Transaction> responseEntityTransaction = restTemplate.postForEntity("/transactions", transactionRequest, Transaction.class);
 
         //then
         assertEquals(CREATED, responseEntityTransaction.getStatusCode());
-        assertNotNull(responseEntityTransaction.getHeaders().getLocation());
+        assertNotNull(responseEntityTransaction.getBody());
+        assertNotNull(responseEntityTransaction.getBody().getId());
     }
 
     @Test
@@ -76,7 +77,7 @@ public class TransactionControllerItTest {
 
         //when
         HttpEntity<TransactionRequest> transactionRequest = new HttpEntity<>(TransactionRequest.builder().accountId(1L).operationTypeId(4L).amount(-10.00).build());
-        ResponseEntity<Void> responseEntityTransaction = restTemplate.postForEntity("/transactions", transactionRequest, Void.class);
+        ResponseEntity<Transaction> responseEntityTransaction = restTemplate.postForEntity("/transactions", transactionRequest, Transaction.class);
 
         //then
         assertEquals(BAD_REQUEST, responseEntityTransaction.getStatusCode());
@@ -92,13 +93,12 @@ public class TransactionControllerItTest {
 
         //when
         HttpEntity<TransactionRequest> transactionRequest = new HttpEntity<>(TransactionRequest.builder().accountId(1L).operationTypeId(1L).amount(20.00).build());
-        ResponseEntity<Void> responseEntityTransaction = restTemplate.postForEntity("/transactions", transactionRequest, Void.class);
+        ResponseEntity<Transaction> responseEntityTransaction = restTemplate.postForEntity("/transactions", transactionRequest, Transaction.class);
 
         //then
         assertEquals(BAD_REQUEST, responseEntityTransaction.getStatusCode());
     }
 
-/*
     @Test
     @DisplayName("given transaction id for a new balance, when GET existing transaction, then returns 200")
     public void givenTransactionId_whenGetExistingTransaction_thenReturns200() {
@@ -113,19 +113,16 @@ public class TransactionControllerItTest {
         restTemplate.postForEntity("/transactions", transactionRequest2, Void.class);
 
         HttpEntity<TransactionRequest> transactionRequest3 = new HttpEntity<>(TransactionRequest.builder().accountId(1L).operationTypeId(4L).amount(50.00).build());
-        ResponseEntity<Void> responseEntityTransaction =  restTemplate.postForEntity("/transactions", transactionRequest3, Void.class);
+        ResponseEntity<Transaction> responseEntity =  restTemplate.postForEntity("/transactions", transactionRequest3, Transaction.class);
 
-        //when
-        ResponseEntity<Transaction> responseEntity = restTemplate.getForEntity(responseEntityTransaction.getHeaders().getLocation(), Transaction.class);
 
         //then
-        assertEquals(OK, responseEntity.getStatusCode());
+        assertEquals(CREATED, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
         assertNotNull(responseEntity.getBody().getId());
         assertEquals(50.00, responseEntity.getBody().getAmount());
         assertEquals(10.00, responseEntity.getBody().getBalance());
     }
-*/
 
 
 }
