@@ -49,6 +49,12 @@ public class Transaction implements Serializable {
     @Schema(description = "It holds the value of the transaction. Positive amount only for 'Credit Voucher'. ", example = "-30.00", required = true)
     private Double amount;
 
+    @Column(name = "balance", nullable = false, columnDefinition = "DECIMAL(4,2)")
+    @NotNull
+    @Schema(description = "It holds the balance of the transaction.", example = "-30.00", required = true)
+    private Double balance;
+
+
     @CreationTimestamp
     @Column(name = "event_date", nullable = false)
     @NotNull

@@ -34,4 +34,6 @@ public class Account implements Serializable {
     @Schema(description = "Unique document number.", example = "11111", required = true)
     private String documentNumber;
 
+
+
 }
