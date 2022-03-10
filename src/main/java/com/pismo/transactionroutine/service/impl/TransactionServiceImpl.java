@@ -90,7 +90,7 @@ public class TransactionServiceImpl implements TransactionService {
         var balanceNew = amount; //60
 
         for (Transaction transaction : transactions) {
-            if (transaction.getBalance() < 0 && amount > 0) { //proceed only if the balance is -ve i.e purchase type and amount is positive i.e Credit type
+            if (transaction.getBalance() < 0 && balanceNew > 0) { //proceed only if the balance is -ve i.e purchase type and amount is positive i.e Credit type
                 var balancePos = Math.abs(transaction.getBalance());
                 if (amountNew > balancePos) {
                     amountNew = amountNew - balancePos;
