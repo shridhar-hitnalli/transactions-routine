@@ -12,9 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Date;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -52,8 +52,8 @@ public class TransactionRepositoryTest {
     public void whenSave_thenCreatingTransactionShouldBeSuccessful() {
         //given
         Double amount = 10.00;
-        Transaction transaction = Transaction.builder().account(account).operationType(operationType).amount(amount).eventDate(new Date()).build();
-        Transaction transaction2 = Transaction.builder().account(account).operationType(operationType).amount(amount).eventDate(new Date()).build();
+        Transaction transaction = Transaction.builder().account(account).operationType(operationType).amount(amount).balance(amount).eventDate(new Date()).build();
+        Transaction transaction2 = Transaction.builder().account(account).operationType(operationType).amount(amount).balance(amount).eventDate(new Date()).build();
 
         //when
         Transaction createdTransaction = transactionRepository.save(transaction);
@@ -72,13 +72,13 @@ public class TransactionRepositoryTest {
     public void whenSaveMultipleOperationType_thenCreatingAccountShouldBeSuccessful() {
         //given
         Double amount = 10.00;
-        Transaction transaction1 = Transaction.builder().account(account).operationType(operationType).amount(amount).eventDate(new Date()).build();
+        Transaction transaction1 = Transaction.builder().account(account).operationType(operationType).amount(amount).balance(amount).eventDate(new Date()).build();
 
         OperationType operationType2 = operationTypeRepository.findById(2L).get();
-        Transaction transaction2 = Transaction.builder().account(account).operationType(operationType2).amount(amount).eventDate(new Date()).build();
+        Transaction transaction2 = Transaction.builder().account(account).operationType(operationType2).amount(amount).balance(amount).eventDate(new Date()).build();
 
         OperationType operationType3 = operationTypeRepository.findById(4L).get();
-        Transaction transaction3 = Transaction.builder().account(account).operationType(operationType3).amount(amount).eventDate(new Date()).build();
+        Transaction transaction3 = Transaction.builder().account(account).operationType(operationType3).amount(amount).balance(amount).eventDate(new Date()).build();
 
         //when
         Transaction createdTransaction1 = transactionRepository.save(transaction1);
@@ -105,13 +105,13 @@ public class TransactionRepositoryTest {
         //given
         Double amount = 10.00;
 
-        Transaction transaction1 = Transaction.builder().account(account).operationType(operationType).amount(amount).eventDate(new Date()).build();
+        Transaction transaction1 = Transaction.builder().account(account).operationType(operationType).amount(amount).balance(amount).eventDate(new Date()).build();
 
         String documentNumber = "2312331";
         Account account2 = Account.builder().documentNumber(documentNumber).build();
         accountRepository.save(account2);
 
-        Transaction transaction2 = Transaction.builder().account(account2).operationType(operationType).amount(amount).eventDate(new Date()).build();
+        Transaction transaction2 = Transaction.builder().account(account2).operationType(operationType).amount(amount).balance(amount).eventDate(new Date()).build();
 
         //when
         Transaction createdTransaction1 = transactionRepository.save(transaction1);

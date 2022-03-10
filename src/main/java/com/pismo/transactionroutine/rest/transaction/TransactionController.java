@@ -5,6 +5,7 @@ import com.pismo.transactionroutine.rest.request.TransactionRequest;
 import com.pismo.transactionroutine.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -48,4 +49,17 @@ public class TransactionController {
         return ResponseEntity.created(location).build();
     }
 
+    @Operation(summary = "Retrieves a transaction by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json") }),
+            @ApiResponse(responseCode = "400", description = "Invalid id provided", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Transaction not found", content = @Content) })
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Transaction> findTransactionById(@PathVariable("id") Long id) {
+
+        log.info("GET /transactions/{}",id);
+        return new ResponseEntity<>(transactionService.findById(id), HttpStatus.OK);
+
+    }
 }

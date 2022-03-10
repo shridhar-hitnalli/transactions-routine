@@ -108,58 +108,51 @@ public class TransactionServiceTest {
     }
 
     @Test
-    @DisplayName("given non existing account id, when find Account, then exception is thrown")
-    void giveBalance_whenFindingNewBalance_ThenReturnedNewBalanceAndAmount() {
-        TransactionRequest transactionRequest = TransactionRequest.builder().accountId(1L).operationTypeId(1L).amount(-20.00).build();
+    @DisplayName("given positive credit type, when create transaction, then new Transaction Id is returned")
+    void givePositiveCredit_whenCreateTransaction_ThenReturnedNewBalance() {
 
-        Account account = Account.builder().id(transactionRequest.getAccountId()).documentNumber("21312331231").build();
-
-        OperationType operationType = OperationType.builder().id(transactionRequest.getOperationTypeId()).description("Normal Purchase").build();
-
-        OperationType operationType2 = OperationType.builder().id(4L).description("Credit Voucher").build();
-
-        when(accountServiceMock.findById(transactionRequest.getAccountId())).thenReturn(account);
-        when(operationTypeServiceMock.findById(transactionRequest.getOperationTypeId())).thenReturn(operationType);
+        Account account = Account.builder().id(1L).documentNumber("21312331231").build();
+        OperationType operationType1 = OperationType.builder().id(1L).description("Normal Purchase").build();
         Transaction transaction1 =  Transaction.builder()
                 .id(1L)
                 .account(account)
                 .amount(-20.00)
-                .operationType(operationType)
+                .operationType(operationType1)
                 .balance(-20.00)
                 .eventDate(new Date())
                 .build();
+
         Transaction transaction2 =  Transaction.builder()
                 .id(2L)
                 .account(account)
-                .amount(30.00)
-                .operationType(operationType2)
-                .balance(30.00)
+                .amount(-30.00)
+                .operationType(operationType1)
+                .balance(-30.00)
                 .eventDate(new Date())
                 .build();
+
         List<Transaction> transactionList = Arrays.asList(transaction1, transaction2);
-        when(transactionRepositoryMock.findByAccount_Id(transactionRequest.getAccountId())).thenReturn(transactionList);
+        OperationType operationType2 = OperationType.builder().id(4L).description("Credit Voucher").build();
+        TransactionRequest transactionRequest = TransactionRequest.builder().accountId(1L).operationTypeId(4L).amount(60.00).build();
+
+        when(accountServiceMock.findById(transactionRequest.getAccountId())).thenReturn(account);
+        when(operationTypeServiceMock.findById(transactionRequest.getOperationTypeId())).thenReturn(operationType2);
+
+        when(transactionRepositoryMock.findByAccountId(transactionRequest.getAccountId())).thenReturn(transactionList);
 
         Transaction transaction =  Transaction.builder()
-                .id(1L)
+                .id(3L)
                 .account(account)
                 .amount(transactionRequest.getAmount())
-                .operationType(operationType)
-                .balance(transactionRequest.getAmount())
+                .operationType(operationType2)
+                .balance(10.00)
                 .eventDate(new Date())
                 .build();
 
         when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transaction);
 
-        transactionService.create(transactionRequest);
-
-
-        TransactionRequest transactionRequest2 = TransactionRequest.builder().accountId(1L).operationTypeId(4L).amount(30.00).build();
-
-        when(accountServiceMock.findById(1L)).thenReturn(account);
-        when(operationTypeServiceMock.findById(4L)).thenReturn(operationType2);
-
-
-
-        transactionService.create(transactionRequest2);
+        Long newId = transactionService.create(transactionRequest);
+        assertNotNull(newId);
+        assertEquals(transaction.getId(), newId);
     }
 }

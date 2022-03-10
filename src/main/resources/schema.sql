@@ -22,6 +22,7 @@ create table `transaction`
     account_id            bigint(20) references account(id) on delete cascade,
     operation_type_id     bigint(20) references operation_type(id) on delete cascade,
     amount                numeric,
+    balance               numeric,
     event_date            datetime NOT NULL,
     primary key (id)
 );

@@ -2,6 +2,7 @@ package com.pismo.transactionroutine.repository;
 
 import com.pismo.transactionroutine.domain.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,5 +12,8 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    List<Transaction> findByAccount_Id(Long accountId);
+    @Query(
+            value = "SELECT * FROM transaction t WHERE t.account_id = ?1",
+            nativeQuery = true)
+    List<Transaction> findByAccountId(Long accountId);
 }

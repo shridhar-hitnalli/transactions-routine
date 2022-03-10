@@ -1,10 +1,7 @@
 package com.pismo.transactionroutine.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -22,6 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Data
+@EqualsAndHashCode(of = { "id"})
 public class Transaction implements Serializable {
 
     private static final long serialVersionUID = 290968723743544700L;
