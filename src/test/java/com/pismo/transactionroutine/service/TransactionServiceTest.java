@@ -110,8 +110,9 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("given positive credit type, when create transaction, then new Transaction Id is returned")
     void givePositiveCredit_whenCreateTransaction_ThenReturnedNewBalance() {
-
-        Account account = Account.builder().id(1L).documentNumber("21312331231").build();
+        //given
+        var accountId = 1L;
+        Account account = Account.builder().id(accountId).documentNumber("21312331231").build();
         OperationType operationType1 = OperationType.builder().id(1L).description("Normal Purchase").build();
         Transaction transaction1 =  Transaction.builder()
                 .id(1L)
@@ -132,27 +133,20 @@ public class TransactionServiceTest {
                 .build();
 
         List<Transaction> transactionList = Arrays.asList(transaction1, transaction2);
+        when(transactionRepositoryMock.findByAccountId(accountId)).thenReturn(transactionList);
+
+        //when
         OperationType operationType2 = OperationType.builder().id(4L).description("Credit Voucher").build();
-        TransactionRequest transactionRequest = TransactionRequest.builder().accountId(1L).operationTypeId(4L).amount(60.00).build();
+        List<Transaction> transactions = transactionService.balanceOperation(account, 60.00, operationType2);
 
-        when(accountServiceMock.findById(transactionRequest.getAccountId())).thenReturn(account);
-        when(operationTypeServiceMock.findById(transactionRequest.getOperationTypeId())).thenReturn(operationType2);
+        //then
+        assertFalse(transactions.isEmpty());
+        assertEquals(0, transactions.get(0).getBalance().intValue());
+        assertEquals(-20.00, transactions.get(0).getAmount().intValue());
+        assertEquals(0, transactions.get(1).getBalance().intValue());
+        assertEquals(-30.00, transactions.get(1).getAmount().intValue());
+        assertEquals(10.00, transactions.get(2).getBalance().intValue());
+        assertEquals(60.00, transactions.get(2).getAmount().intValue());
 
-        when(transactionRepositoryMock.findByAccountId(transactionRequest.getAccountId())).thenReturn(transactionList);
-
-        Transaction transaction =  Transaction.builder()
-                .id(3L)
-                .account(account)
-                .amount(transactionRequest.getAmount())
-                .operationType(operationType2)
-                .balance(10.00)
-                .eventDate(new Date())
-                .build();
-
-        when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(transaction);
-
-        Long newId = transactionService.create(transactionRequest).getId();
-        assertNotNull(newId);
-        assertEquals(transaction.getId(), newId);
     }
 }

@@ -14,6 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -58,44 +62,62 @@ public class TransactionServiceImpl implements TransactionService {
 
         }
         if (isCreditOperation) {
-            balance = balanceOperation(account.getId(), transactionRequest.getAmount());
+            List<Transaction> transactionsToSave = balanceOperation(account, transactionRequest.getAmount(), operationType);
+            List<Transaction> savedTransactions =  transactionRepository.saveAll(transactionsToSave);
+            return savedTransactions
+                    .stream()
+                    .max(Comparator.comparing(Transaction::getId))
+                    .orElse(transactionsToSave.get(transactionsToSave.size() - 1)); //as max returns optional object
+
+        } else {
+            return transactionRepository.save(
+                    Transaction.builder()
+                            .account(account)
+                            .amount(transactionRequest.getAmount())
+                            .operationType(operationType)
+                            .balance(balance)
+                            .eventDate(new Date())
+                            .build()
+            );
         }
 
-
-        return transactionRepository.save(
-                Transaction.builder()
-                        .account(account)
-                        .amount(transactionRequest.getAmount())
-                        .operationType(operationType)
-                        .balance(balance)
-                        .eventDate(new Date())
-                        .build()
-        );
     }
 
     private List<Transaction> getTransactionsByAccountId(Long id) {
         return transactionRepository.findByAccountId(id);
     }
 
-    public Double balanceOperation(final Long accountId, Double amount) {
-        var transactions = getTransactionsByAccountId(accountId);
-        var amountNew = amount; // 60
+    public List<Transaction> balanceOperation(Account account, Double amount, OperationType operationType) {
+        var transactions = getTransactionsByAccountId(account.getId());
         var balanceNew = amount; //60
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+
+        List<Transaction> transactionsToSave = new ArrayList<>();
 
         for (Transaction transaction : transactions) {
-            if (transaction.getBalance() < 0 && balanceNew > 0) { //proceed only if the balance is -ve i.e purchase type and amount is positive i.e Credit type
+            if (transaction.getBalance() < 0 && balanceNew.intValue() > 0) { //proceed only if the balance is -ve i.e purchase type and amount is positive i.e Credit type
                 var balancePos = Math.abs(transaction.getBalance());
-                if (amountNew > balancePos) {
-                    amountNew = amountNew - balancePos;
-                    balanceNew = amountNew;
+                if (balanceNew > balancePos) {
+                    balanceNew = Double.parseDouble(df.format(balanceNew - balancePos));
                     transaction.setBalance(0.00);
                 } else {
-                    balanceNew = balanceNew - amountNew;
-                    transaction.setBalance(amountNew - balancePos);
+                    var bal = Double.parseDouble(df.format(balanceNew - balancePos));
+                    transaction.setBalance(-bal);
+                    balanceNew = 0.00;
                 }
-                transactionRepository.save(transaction); //the save is called here to test in real scenario we could add in a list and then save one by one
+                transactionsToSave.add(transaction);
             }
         }
-        return balanceNew;
+        //new transaction with operation type -> credit after discharge process
+        transactionsToSave.add(Transaction.builder()
+                .account(account)
+                .amount(amount)
+                .operationType(operationType)
+                .balance(balanceNew)
+                .eventDate(new Date())
+                .build());
+
+        return transactionsToSave;
     }
 }
